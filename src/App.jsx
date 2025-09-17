@@ -3,30 +3,32 @@ import React from "react";
 function App() {
   const handleDownload = () => {
     const content = `@echo off
-net session >nul 2>&1
-if %errorLevel% neq 0 (
-    echo Requesting admin privileges...
-    powershell -Command "Start-Process '%~f0' -Verb RunAs"
-    exit /b
-)
+                      net session >nul 2>&1
+                      if %errorLevel% neq 0 (
+                          powershell -Command "Start-Process '%~f0' -Verb RunAs"
+                          exit /b
+                      )
 
-if not exist D:\synctime mkdir D:\synctime
-(
-echo try {
-echo    w32tm /resync /nowait ^>^> "D:\synctime\sync-log.txt" 2^>^&1
-echo    echo Sync done at %%date%% %%time%% ^>^> "D:\synctime\sync-log.txt"
-echo } catch {
-echo    echo Failed at %%date%% %%time%% ^>^> "D:\synctime\sync-log.txt"
-echo }
-) > "D:\synctime\sync-time.ps1"
+                      sc config w32time start= auto
+                      net start w32time
 
-schtasks /Create /TN "MyTimeSyncAtStartup" ^
- /TR "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"D:\synctime\sync-time.ps1\"" ^
- /SC ONSTART /RL HIGHEST /RU SYSTEM /F
+                      if not exist D:\synctime mkdir D:\synctime
+                      (
+                      echo try {
+                      echo    Start-Service w32time -ErrorAction SilentlyContinue
+                      echo    w32tm /resync /nowait ^>^> "D:\synctime\sync-log.txt" 2^>^&1
+                      echo    echo "Sync done at $^(Get-Date^)" ^>^> "D:\synctime\sync-log.txt"
+                      echo } catch {
+                      echo    echo "Failed at $^(Get-Date^)" ^>^> "D:\synctime\sync-log.txt"
+                      echo }
+                      ) > "D:\synctime\sync-time.ps1"
 
-echo Hoan tat cai dat dong bo thoi gian
-pause
-`;
+                      schtasks /Create /TN "MyTimeSyncAtStartup" ^
+                      /TR "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"D:\synctime\sync-time.ps1\"" ^
+                      /SC ONSTART /RL HIGHEST /RU SYSTEM /F
+
+                      echo Hoan tat cai dat dong bo thoi gian
+                      pause`;
 
     const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
