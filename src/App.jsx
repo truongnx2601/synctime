@@ -41,13 +41,30 @@ function App() {
     URL.revokeObjectURL(url);
   };
 
+  function handleDownload2() {
+  const link = document.createElement('a');
+  link.href =
+    'https://github.com/truongnx2601/backupbrowser/releases/latest/download/BackupBrowser.exe';
+  link.download = 'BackupBrowser.exe';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  };
+
+
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-100 gap-4">
       <button
         onClick={handleDownload}
         className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
       >
         Tải file đồng bộ thời gian
+      </button>
+      <button
+        onClick={handleDownload2}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+      >
+        Tải file backup browser
       </button>
     </div>
   );
