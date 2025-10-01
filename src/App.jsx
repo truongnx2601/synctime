@@ -51,6 +51,16 @@ function App() {
   document.body.removeChild(link);
   };
 
+  function handleDownload3() {
+  const link = document.createElement('a');
+  link.href =
+    'https://github.com/truongnx2601/backupbrowser/releases/latest/download/Site.exe';
+  link.download = 'BackupBrowser.exe';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  };
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 gap-4">
@@ -65,6 +75,12 @@ function App() {
         className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
       >
         Tải file backup browser
+      </button>
+      <button
+        onClick={handleDownload3}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+      >
+        Tải file Site Manager
       </button>
     </div>
   );
