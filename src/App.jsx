@@ -54,8 +54,8 @@ function App() {
   function handleDownload3() {
   const link = document.createElement('a');
   link.href =
-    'https://github.com/truongnx2601/backupbrowser/releases/latest/download/Site.exe';
-  link.download = 'BackupBrowser.exe';
+    'https://github.com/truongnx2601/sitemanager/releases/download/v1.0.0/Site.exe';
+  link.download = 'Site.exe';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
