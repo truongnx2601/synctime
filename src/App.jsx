@@ -162,67 +162,46 @@ if "!CUR_MAJOR!"=="!LATEST_MAJOR!" (
     goto END
 )
 
-if exist "%ProgramFiles(x86)%\Google\Update\GoogleUpdate.exe" (
-    set "UPDATE_PATH=%ProgramFiles(x86)%\Google\Update\GoogleUpdate.exe"
-) else (
-    if exist "%ProgramFiles%\Google\Update\GoogleUpdate.exe" (
-        set "UPDATE_PATH=%ProgramFiles%\Google\Update\GoogleUpdate.exe"
-    ) else (
-        echo GoogleUpdate.exe not found!
-        echo [ERROR] GoogleUpdate.exe not found! >>"%LOGFILE%"
-        goto END
-    )
-)
-
-echo Found Google Update at: %UPDATE_PATH%
-echo Found Google Update at: %UPDATE_PATH% >>"%LOGFILE%"
-
 echo Running Chrome update...
-echo [INFO] Checking for running Chrome processes... >>"%LOGFILE%"
-tasklist /fi "imagename eq chrome.exe" | find /i "chrome.exe" >nul
-if %errorlevel%==0 (
-    echo [ACTION] Chrome is running. Attempting to close... >>"%LOGFILE%"
-    taskkill /im chrome.exe /f >nul 2>&1
-    timeout /t 3 >nul
-)
-tasklist /fi "imagename eq GoogleCrashHandler.exe" | find /i "GoogleCrashHandler.exe" >nul
-if %errorlevel%==0 taskkill /im GoogleCrashHandler.exe /f >nul 2>&1
-tasklist /fi "imagename eq GoogleCrashHandler64.exe" | find /i "GoogleCrashHandler64.exe" >nul
-if %errorlevel%==0 taskkill /im GoogleCrashHandler64.exe /f >nul 2>&1
-echo [INFO] All Chrome processes closed. Proceeding update... >>"%LOGFILE%"
-"%UPDATE_PATH%" /update >>"%LOGFILE%" 2>&1
-echo [ACTION] Update process triggered at %time% >>"%LOGFILE%"
-echo.
+:: =========================
+:: Settings
+:: =========================
+set "MSI_URL=https://dl.google.com/dl/chrome/install/GoogleChromeStandaloneEnterprise64.msi"
+set "MSI_PATH=%USERPROFILE%\Downloads\Chrome.msi"
+set "INSTALL_LOG=D:\chrome_install.log"
 
-set /a COUNT=0
-:CHECK_LOOP
-set /a COUNT+=1
-timeout /t 30 >nul
-for /f "tokens=2 delims==" %%A in ('wmic datafile where name^="%CHROME_PATH:\=\\%" get Version /value 2^>nul') do set NEW_VERSION=%%A
-if "!NEW_VERSION!"=="%CURRENT_VERSION%" (
-    if !COUNT! lss 20 (
-        echo [INFO] Checking update... attempt !COUNT! >>"%LOGFILE%"
-        goto CHECK_LOOP
-    )
-    echo Update timed out (no version change after 10 minutes)
-    echo [WARN] Timeout waiting for Chrome update. >>"%LOGFILE%"
-    goto END
-)
-echo Chrome updated successfully!
-echo New version: !NEW_VERSION!
-echo [SUCCESS] Chrome updated successfully to !NEW_VERSION! >>"%LOGFILE%"
+:: =========================
+:: Start Chrome MSI download & install in background
+:: =========================
+echo [INFO] Starting Chrome MSI download and silent install... >>"%LOGFILE%"
+powershell -Command "Start-Job { Invoke-WebRequest -Uri '%MSI_URL%' -OutFile '%MSI_PATH%'; Start-Process msiexec.exe -ArgumentList '/i','%MSI_PATH%','/qn','/norestart','/L*v','%INSTALL_LOG%' -Wait }"
 
-:END
+echo [INFO] Chrome install job started in background. Other script steps continue... >>"%LOGFILE%"
+
+:: Wait a few seconds for job to start
+timeout /t 5 >nul
+
+echo [+] Reloading policies for Chrome and Edge...
 if exist "%CHROME_PATH%" (
-    echo [+] Reloading Chrome policy...
-    start "" %CHROME_PATH% --policy-refresh
+    start "" "%CHROME_PATH%" --policy-refresh
 )
 if exist "%EDGE_PATH%" (
-    echo [+] Reloading Edge policy...
-    start "" %EDGE_PATH% --policy-refresh
+    start "" "%EDGE_PATH%" --policy-refresh
 )
 
+:: =========================
+:: Wait for Chrome MSI install job to finish (optional)
+:: =========================
+echo [INFO] Waiting for Chrome install job to finish...
+powershell -Command "Get-Job | Wait-Job | Receive-Job"
+
+echo [INFO] Chrome install completed. >>"%LOGFILE%"
+
+:: =========================
+:: End log
+:: =========================
 echo.
+
 echo [DONE]
 echo [END] %date% %time% >>"%LOGFILE%"
 exit /b
