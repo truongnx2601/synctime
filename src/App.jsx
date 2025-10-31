@@ -61,6 +61,154 @@ function App() {
   document.body.removeChild(link);
   };
 
+  const handleDownload4 = () => {
+  const content = String.raw`@echo off
+setlocal enabledelayedexpansion
+
+:: =========================================================
+::  VNVC - Local Network Access Policy (Chrome + Edge)
+:: =========================================================
+
+:: Kiểm tra quyền admin
+net session >nul 2>&1
+if %errorLevel% neq 0 (
+    echo [!] Dang yeu cau quyen Administrator...
+    powershell -Command "Start-Process '%~f0' -Verb runAs"
+    exit /b
+)
+
+echo [+] Dang ap dung chinh sach Local Network Access...
+
+:: =========================================================
+:: Ghi registry cho Google Chrome
+:: =========================================================
+reg delete "HKLM\SOFTWARE\Policies\Google\Chrome\LocalNetworkAccessAllowedForUrls" /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Policies\Google\Chrome\LocalNetworkAccessAllowedForUrls" /f
+reg add "HKLM\SOFTWARE\Policies\Google\Chrome\LocalNetworkAccessAllowedForUrls" /v "1" /t REG_SZ /d "https://tiemchung.vnvc.info" /f
+reg add "HKLM\SOFTWARE\Policies\Google\Chrome\LocalNetworkAccessAllowedForUrls" /v "2" /t REG_SZ /d "https://it-genie.vnvc.info" /f
+reg add "HKLM\SOFTWARE\Policies\Google\Chrome\LocalNetworkAccessAllowedForUrls" /v "3" /t REG_SZ /d "https://test-pm.vnvc.info" /f
+
+:: =========================================================
+:: Ghi registry cho Microsoft Edge
+:: =========================================================
+reg delete "HKLM\SOFTWARE\Policies\Microsoft\Edge\LocalNetworkAccessAllowedForUrls" /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge\LocalNetworkAccessAllowedForUrls" /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge\LocalNetworkAccessAllowedForUrls" /v "1" /t REG_SZ /d "https://tiemchung.vnvc.info" /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge\LocalNetworkAccessAllowedForUrls" /v "2" /t REG_SZ /d "https://it-genie.vnvc.info" /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge\LocalNetworkAccessAllowedForUrls" /v "3" /t REG_SZ /d "https://test-pm.vnvc.info" /f
+
+echo [OK] Registry entries applied successfully.
+
+set "LOGFILE=D:\setting_chrome.log"
+echo ==================================================>>"%LOGFILE%"
+echo [START] %date% %time% >>"%LOGFILE%"
+echo Checking Google Chrome version...>>"%LOGFILE%"
+echo.>>"%LOGFILE%"
+
+echo ===============================================
+echo   GOOGLE CHROME AUTO CHECK & UPDATE
+echo ===============================================
+echo.
+
+set "CHROME_PATH=%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe"
+if not exist "%CHROME_PATH%" set "CHROME_PATH=%ProgramFiles%\Google\Chrome\Application\chrome.exe"
+
+if not exist "%CHROME_PATH%" (
+    echo Chrome not found!
+    echo [ERROR] Chrome not found! >>"%LOGFILE%"
+    echo.>>"%LOGFILE%"
+    goto END
+)
+
+for /f "tokens=2 delims==" %%%%A in ('wmic datafile where name^="%CHROME_PATH:\=\\%" get Version /value 2^>nul') do set CURRENT_VERSION=%%%%A
+echo Current Chrome version: %CURRENT_VERSION%
+echo Current version: %CURRENT_VERSION% >>"%LOGFILE%"
+echo.
+
+echo Checking latest version from Google...
+for /f "tokens=2 delims=:" %%%%A in ('curl -s https://versionhistory.googleapis.com/v1/chrome/platforms/win64/channels/stable/versions ^| findstr /i "version" ^| head -n 1') do (
+    set LATEST=%%%%A
+)
+set LATEST=%LATEST:"=%
+set LATEST=%LATEST: =%
+set LATEST=%LATEST:,=%
+
+echo Latest available version: %LATEST%
+echo Latest version: %LATEST% >>"%LOGFILE%"
+echo.
+
+for /f "tokens=1 delims=." %%%%a in ("%CURRENT_VERSION%") do set CUR_MAJOR=%%%%a
+for /f "tokens=1 delims=." %%%%a in ("%LATEST%") do set LATEST_MAJOR=%%%%a
+
+echo Current major: !CUR_MAJOR!
+echo Latest  major: !LATEST_MAJOR!
+echo Current major: !CUR_MAJOR! >>"%LOGFILE%"
+echo Latest  major: !LATEST_MAJOR! >>"%LOGFILE%"
+
+if "!CUR_MAJOR!"=="!LATEST_MAJOR!" (
+    echo Chrome is up to date.
+    echo [INFO] Chrome is already the latest major version. >>"%LOGFILE%"
+    echo.>>"%LOGFILE%"
+    goto END
+)
+
+if exist "%ProgramFiles(x86)%\Google\Update\GoogleUpdate.exe" (
+    set "UPDATE_PATH=%ProgramFiles(x86)%\Google\Update\GoogleUpdate.exe"
+) else if exist "%ProgramFiles%\Google\Update\GoogleUpdate.exe" (
+    set "UPDATE_PATH=%ProgramFiles%\Google\Update\GoogleUpdate.exe"
+) else (
+    echo GoogleUpdate.exe not found!
+    echo [ERROR] GoogleUpdate.exe not found! >>"%LOGFILE%"
+    goto END
+)
+
+echo Running Chrome update...
+"%UPDATE_PATH%" /ua /installsource scheduler >>"%LOGFILE%" 2>&1
+echo [ACTION] Update process triggered at %time% >>"%LOGFILE%"
+echo.
+
+set /a COUNT=0
+:CHECK_LOOP
+set /a COUNT+=1
+timeout /t 30 >nul
+for /f "tokens=2 delims==" %%%%A in ('wmic datafile where name^="%CHROME_PATH:\=\\%" get Version /value 2^>nul') do set NEW_VERSION=%%%%A
+if "%NEW_VERSION%"=="%CURRENT_VERSION%" (
+    if !COUNT! lss 20 goto CHECK_LOOP
+    echo Update timed out (no version change after 10 minutes)
+    echo [WARN] Timeout waiting for Chrome update. >>"%LOGFILE%"
+    goto END
+)
+echo Chrome updated successfully!
+echo New version: !NEW_VERSION!
+echo [SUCCESS] Chrome updated successfully to !NEW_VERSION! >>"%LOGFILE%"
+
+:END
+set CHROME_PATH="%ProgramFiles%\Google\Chrome\Application\chrome.exe"
+set EDGE_PATH="%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe"
+
+if exist %CHROME_PATH% (
+    echo [+] Reloading Chrome policy...
+    start "" %CHROME_PATH% --policy-refresh
+)
+if exist %EDGE_PATH% (
+    echo [+] Reloading Edge policy...
+    start "" %EDGE_PATH% --policy-refresh
+)
+
+echo.
+echo [DONE]
+exit /b
+`;
+
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "config-chrome.bat";
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 gap-4">
@@ -81,6 +229,12 @@ function App() {
         className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
       >
         Tải file Site Manager
+      </button>
+      <button
+        onClick={handleDownload4}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+      >
+        Tải file Config Chrome
       </button>
     </div>
   );
