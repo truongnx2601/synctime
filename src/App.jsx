@@ -178,7 +178,7 @@ echo Found Google Update at: %UPDATE_PATH%
 echo Found Google Update at: %UPDATE_PATH% >>"%LOGFILE%"
 
 echo Running Chrome update...
-"%UPDATE_PATH%" /ua /installsource scheduler >>"%LOGFILE%" 2>&1
+"%UPDATE_PATH%" /update >>"%LOGFILE%" 2>&1
 echo [ACTION] Update process triggered at %time% >>"%LOGFILE%"
 echo.
 
