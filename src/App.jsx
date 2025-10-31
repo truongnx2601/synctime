@@ -111,8 +111,8 @@ echo   GOOGLE CHROME AUTO CHECK & UPDATE
 echo ===============================================
 echo.
 
-set CHROME_PATH="%ProgramFiles%\Google\Chrome\Application\chrome.exe"
-set EDGE_PATH="%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe"
+set "CHROME_PATH=%ProgramFiles%\Google\Chrome\Application\chrome.exe"
+set "EDGE_PATH=%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe"
 
 if not exist "%CHROME_PATH%" (
     echo Chrome not found!
