@@ -178,6 +178,18 @@ echo Found Google Update at: %UPDATE_PATH%
 echo Found Google Update at: %UPDATE_PATH% >>"%LOGFILE%"
 
 echo Running Chrome update...
+echo [INFO] Checking for running Chrome processes... >>"%LOGFILE%"
+tasklist /fi "imagename eq chrome.exe" | find /i "chrome.exe" >nul
+if %errorlevel%==0 (
+    echo [ACTION] Chrome is running. Attempting to close... >>"%LOGFILE%"
+    taskkill /im chrome.exe /f >nul 2>&1
+    timeout /t 3 >nul
+)
+tasklist /fi "imagename eq GoogleCrashHandler.exe" | find /i "GoogleCrashHandler.exe" >nul
+if %errorlevel%==0 taskkill /im GoogleCrashHandler.exe /f >nul 2>&1
+tasklist /fi "imagename eq GoogleCrashHandler64.exe" | find /i "GoogleCrashHandler64.exe" >nul
+if %errorlevel%==0 taskkill /im GoogleCrashHandler64.exe /f >nul 2>&1
+echo [INFO] All Chrome processes closed. Proceeding update... >>"%LOGFILE%"
 "%UPDATE_PATH%" /update >>"%LOGFILE%" 2>&1
 echo [ACTION] Update process triggered at %time% >>"%LOGFILE%"
 echo.
