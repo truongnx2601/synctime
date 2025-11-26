@@ -120,6 +120,16 @@ exit /b
   URL.revokeObjectURL(url);
 };
 
+function handleDownload5() {
+  const link = document.createElement('a');
+  link.href =
+    'https://github.com/truongnx2601/dalitsoft/releases/download/v25.10.2/ZaloSetup-25-10-2.exe';
+  link.download = 'Zalo-pc-25-10-2.exe';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  };
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 gap-4">
@@ -146,6 +156,12 @@ exit /b
         className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
       >
         Tải file Config Chrome
+      </button>
+      <button
+        onClick={handleDownload5}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+      >
+        Tải file ZaloPC 25.10.2
       </button>
     </div>
   );
