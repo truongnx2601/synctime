@@ -128,7 +128,17 @@ function handleDownload5() {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  };
+};
+
+function handleDownload6() {
+  const link = document.createElement('a');
+  link.href =
+    'https://github.com/truongnx2601/backupdatalog/releases/download/v1.0.0/VNVC.-.Sao.l.u.Datalog.rar';
+  link.download = 'datalog-app.exe';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
 
   return (
@@ -162,6 +172,12 @@ function handleDownload5() {
         className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
       >
         Tải file ZaloPC 25.10.2
+      </button>
+      <button
+        onClick={handleDownload6}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+      >
+        Tải file datalog app
       </button>
     </div>
   );
