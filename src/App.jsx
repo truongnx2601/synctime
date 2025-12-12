@@ -133,7 +133,7 @@ function handleDownload5() {
 function handleDownload6() {
   const link = document.createElement('a');
   link.href =
-    'https://github.com/truongnx2601/backupdatalog/releases/download/v1.0.0/VNVC.-.Sao.l.u.Datalog.rar';
+    'https://github.com/truongnx2601/backupdatalog/releases/download/v1.0.0/VNVC.-.Datalog.zip';
   link.download = 'datalog-app.exe';
   document.body.appendChild(link);
   link.click();
