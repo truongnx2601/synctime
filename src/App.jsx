@@ -140,6 +140,16 @@ function handleDownload6() {
   document.body.removeChild(link);
 };
 
+function handleDownload7() {
+  const link = document.createElement('a');
+  link.href =
+    'https://github.com/truongnx2601/hstc/releases/download/latest/HoSoTiemChung.ver6.rar';
+  link.download = 'hstc.exe';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 gap-4">
@@ -178,6 +188,12 @@ function handleDownload6() {
         className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
       >
         Tải file datalog app
+      </button>
+      <button
+        onClick={handleDownload7}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+      >
+        Tải file hstc
       </button>
     </div>
   );
