@@ -150,6 +150,39 @@ function handleDownload7() {
   document.body.removeChild(link);
 };
 
+const handleDownload8 = () => {
+  const content = String.raw`@echo off
+setlocal
+
+set APP_NAME=webapp.exe
+set APP_PATH=D:\Rajah\webapp.exe
+
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    powershell -Command "Start-Process '%~f0' -Verb RunAs"
+    exit /b
+)
+
+tasklist | find /i "%APP_NAME%" >nul
+if %errorlevel%==0 (
+    taskkill /f /im "%APP_NAME%" >nul 2>&1
+    timeout /t 2 >nul
+)
+
+start "" "%APP_PATH%"
+
+exit /b
+`;
+
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "update-rajah.bat";
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 gap-4">
@@ -194,6 +227,12 @@ function handleDownload7() {
         className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
       >
         Tải file hstc
+      </button>
+      <button
+        onClick={handleDownload8}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+      >
+        Tải file update Rajah
       </button>
     </div>
   );
