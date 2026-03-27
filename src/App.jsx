@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 
 function App() {
+  const [showModal, setShowModal] = useState(false);
   const handleDownload = () => {
     const content = `@echo off
                       net session >nul 2>&1
@@ -183,6 +184,204 @@ exit /b
   URL.revokeObjectURL(url);
 };
 
+const handleDownload9 = () => {
+  const token = "bTFsckNaMEJ4eFdGX2lmQVBfM2Q6bWFyRGRhVEh1cHQwUXVkeGwzci1sZw==";
+
+  const ps1Content = String.raw`
+# -----------------------------------------------------------------
+# SELF-ELEVATION
+# -----------------------------------------------------------------
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File \`"$PSCommandPath\`"" -Verb RunAs
+    exit
+}
+
+# CONFIG
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$ProgressPreference = 'SilentlyContinue'
+
+$version = "9.3.2"
+$arch = "windows-x86_64"
+$filename = "elastic-agent-$version-$arch.zip"
+$url = "https://artifacts.elastic.co/downloads/beats/elastic-agent/$filename"
+$tempPath = "$env:TEMP\elastic-agent-setup"
+$fleetUrl = "https://fleet.vnvc.info:10443"
+
+# TOKEN
+$enrollmentToken = "${token}"
+
+Write-Host "[+] Using predefined token..." -ForegroundColor Green
+
+try {
+    if (Test-Path $tempPath) { Remove-Item -Path $tempPath -Recurse -Force }
+    New-Item -ItemType Directory -Path $tempPath | Out-Null
+
+    Invoke-WebRequest -Uri $url -OutFile "$tempPath\$filename" -ErrorAction Stop
+
+    Expand-Archive -Path "$tempPath\$filename" -DestinationPath $tempPath -Force
+
+    $installDir = Get-ChildItem -Path $tempPath -Directory | Select-Object -First 1
+    if ($null -eq $installDir) { throw "Extraction failed." }
+
+    Push-Location $installDir.FullName
+
+    .\elastic-agent.exe install \`
+      --url=$fleetUrl \`
+      --enrollment-token=$enrollmentToken \`
+      --non-interactive \`
+      --insecure
+
+    Pop-Location
+
+    Start-Sleep -Seconds 20
+
+    $agentExe = "C:\Program Files\Elastic\Agent\elastic-agent.exe"
+    if (Test-Path $agentExe) {
+        & $agentExe status
+    }
+
+    Remove-Item -Path $tempPath -Recurse -Force -ErrorAction SilentlyContinue
+
+    Write-Host "[SUCCESS] Done" -ForegroundColor Green
+}
+catch {
+    Write-Host "[FAILED] $($_.Exception.Message)" -ForegroundColor Red
+}
+
+Read-Host "Press Enter to exit..."
+`;
+
+  const cmdContent = `@echo off
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    powershell -Command "Start-Process '%~f0' -Verb RunAs"
+    exit /b
+)
+
+powershell -ExecutionPolicy Bypass -NoProfile -File "%~dp0install.ps1"
+pause
+`;
+
+  // download ps1
+  const ps1Blob = new Blob([ps1Content], { type: "text/plain" });
+  const ps1Url = URL.createObjectURL(ps1Blob);
+  const ps1Link = document.createElement("a");
+  ps1Link.href = ps1Url;
+  ps1Link.download = "install.ps1";
+  ps1Link.click();
+
+  // download cmd
+  const cmdBlob = new Blob([cmdContent], { type: "text/plain" });
+  const cmdUrl = URL.createObjectURL(cmdBlob);
+  const cmdLink = document.createElement("a");
+  cmdLink.href = cmdUrl;
+  cmdLink.download = "run.cmd";
+  cmdLink.click();
+
+  URL.revokeObjectURL(ps1Url);
+  URL.revokeObjectURL(cmdUrl);
+};
+
+const handleDownload10 = () => {
+  const token = "ZXF4dENaMEJXLV90OVUxSGRRaHc6QzFvNEdNQ2NlaUNwVVk0UXJZaDNfdw==";
+
+  const ps1Content = String.raw`
+# -----------------------------------------------------------------
+# SELF-ELEVATION
+# -----------------------------------------------------------------
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File \`"$PSCommandPath\`"" -Verb RunAs
+    exit
+}
+
+# CONFIG
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$ProgressPreference = 'SilentlyContinue'
+
+$version = "9.3.2"
+$arch = "windows-x86_64"
+$filename = "elastic-agent-$version-$arch.zip"
+$url = "https://artifacts.elastic.co/downloads/beats/elastic-agent/$filename"
+$tempPath = "$env:TEMP\elastic-agent-setup"
+$fleetUrl = "https://fleet.vnvc.info:10443"
+
+# TOKEN
+$enrollmentToken = "${token}"
+
+Write-Host "[+] Using predefined token..." -ForegroundColor Green
+
+try {
+    if (Test-Path $tempPath) { Remove-Item -Path $tempPath -Recurse -Force }
+    New-Item -ItemType Directory -Path $tempPath | Out-Null
+
+    Invoke-WebRequest -Uri $url -OutFile "$tempPath\$filename" -ErrorAction Stop
+
+    Expand-Archive -Path "$tempPath\$filename" -DestinationPath $tempPath -Force
+
+    $installDir = Get-ChildItem -Path $tempPath -Directory | Select-Object -First 1
+    if ($null -eq $installDir) { throw "Extraction failed." }
+
+    Push-Location $installDir.FullName
+
+    .\elastic-agent.exe install \`
+      --url=$fleetUrl \`
+      --enrollment-token=$enrollmentToken \`
+      --non-interactive \`
+      --insecure
+
+    Pop-Location
+
+    Start-Sleep -Seconds 20
+
+    $agentExe = "C:\Program Files\Elastic\Agent\elastic-agent.exe"
+    if (Test-Path $agentExe) {
+        & $agentExe status
+    }
+
+    Remove-Item -Path $tempPath -Recurse -Force -ErrorAction SilentlyContinue
+
+    Write-Host "[SUCCESS] Done" -ForegroundColor Green
+}
+catch {
+    Write-Host "[FAILED] $($_.Exception.Message)" -ForegroundColor Red
+}
+
+Read-Host "Press Enter to exit..."
+`;
+
+  const cmdContent = `@echo off
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    powershell -Command "Start-Process '%~f0' -Verb RunAs"
+    exit /b
+)
+
+powershell -ExecutionPolicy Bypass -NoProfile -File "%~dp0install.ps1"
+pause
+`;
+
+  // download ps1
+  const ps1Blob = new Blob([ps1Content], { type: "text/plain" });
+  const ps1Url = URL.createObjectURL(ps1Blob);
+  const ps1Link = document.createElement("a");
+  ps1Link.href = ps1Url;
+  ps1Link.download = "install.ps1";
+  ps1Link.click();
+
+  // download cmd
+  const cmdBlob = new Blob([cmdContent], { type: "text/plain" });
+  const cmdUrl = URL.createObjectURL(cmdBlob);
+  const cmdLink = document.createElement("a");
+  cmdLink.href = cmdUrl;
+  cmdLink.download = "run.cmd";
+  cmdLink.click();
+
+  URL.revokeObjectURL(ps1Url);
+  URL.revokeObjectURL(cmdUrl);
+};
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 gap-4">
@@ -234,6 +433,19 @@ exit /b
       >
         Tải file update Rajah
       </button>
+      <button
+        onClick={handleDownload9}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+      >
+        Tải file Eclastic Agent HCM1
+      </button>
+      <button
+        onClick={handleDownload10}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+      >
+        Tải file Eclastic Agent HCM2
+      </button>
+      
     </div>
   );
 }
