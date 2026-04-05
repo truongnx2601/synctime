@@ -382,6 +382,90 @@ pause
   URL.revokeObjectURL(cmdUrl);
 };
 
+const handleDownload11 = () => {
+    const content = `@echo off
+
+                    net session >nul 2>&1
+                    if %errorLevel% neq 0 (
+                    echo Checking Admin...
+                    powershell -Command "Start-Process cmd -ArgumentList '/c "%~f0"' -Verb RunAs"
+                    exit
+                    )
+
+                    title Config Zalo
+                    color 0A
+
+                    set "ZALO_PATH1=%LOCALAPPDATA%\Programs\Zalo"
+                    set "ZALO_PATH2=%LOCALAPPDATA%\Zalo"
+                    set "ZALO_PATH3=%LOCALAPPDATA%\zalo-updater"
+
+                    :MENU
+                    cls
+                    echo ==============================
+                    echo   CONFIG ZALO PC
+                    echo ==============================
+                    echo 1. Disable Zalo
+                    echo 2. Enable Zalo
+                    echo 0. Exit
+                    echo ==============================
+                    set /p choice=Choose:
+
+                    if "%choice%"=="1" goto BLOCK
+                    if "%choice%"=="2" goto UNBLOCK
+                    if "%choice%"=="0" exit
+                    goto MENU
+
+                    :BLOCK
+                    echo.
+                    echo Disabling Zalo...
+
+                    call :LOCK "%ZALO_PATH1%"
+                    call :LOCK "%ZALO_PATH2%"
+                    call :LOCK "%ZALO_PATH3%"
+
+                    echo.
+                    echo Disable Zalo success!
+                    pause
+                    goto MENU
+
+                    :UNBLOCK
+                    echo.
+                    echo Enabling Zalo...
+
+                    call :UNLOCK "%ZALO_PATH1%"
+                    call :UNLOCK "%ZALO_PATH2%"
+                    call :UNLOCK "%ZALO_PATH3%"
+
+                    echo.
+                    echo Enable Zalo success!
+                    pause
+                    goto MENU
+
+                    :LOCK
+                    mkdir %1 2>nul
+                    takeown /f %1 /r /d y >nul 2>&1
+                    icacls %1 /inheritance:r >nul
+                    icacls %1 /deny %USERNAME%:(OI)(CI)F >nul
+                    goto :eof
+
+                    :UNLOCK
+                    takeown /f %1 /r /d y >nul 2>&1
+                    icacls %1 /remove:d %USERNAME% >nul
+                    icacls %1 /grant %USERNAME%:(OI)(CI)F >nul
+                    goto :eof
+`;
+
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "ConfigZalo.bat";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 gap-4">
@@ -444,6 +528,12 @@ pause
         className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
       >
         Tải file Eclastic Agent HCM2
+      </button>
+      <button
+        onClick={handleDownload11}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+      >
+        Tải file Config ZaloPC
       </button>
       
     </div>
