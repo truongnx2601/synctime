@@ -467,14 +467,24 @@ const handleDownload11 = () => {
   };
 
   function handleDownload12() {
-  const link = document.createElement('a');
-  link.href =
-    'https://github.com/truongnx2601/windowchecker/releases/download/v1.0.0/WindowsLicenseChecker.exe';
-  link.download = 'WindowsLicenseCheker.exe';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
+    const link = document.createElement('a');
+    link.href =
+      'https://github.com/truongnx2601/windowchecker/releases/download/v1.0.0/WindowsLicenseChecker.exe';
+    link.download = 'WindowsLicenseCheker.exe';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  function handleDownload13() {
+    const link = document.createElement('a');
+    link.href =
+      'https://github.com/truongnx2601/o365/releases/download/v1.0.0/OfficeSetup.exe';
+    link.download = 'Office365.exe';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
 
   return (
@@ -550,6 +560,12 @@ const handleDownload11 = () => {
         className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
       >
         Tải file Windows Lic check
+      </button>
+      <button
+        onClick={handleDownload13}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+      >
+        Tải file O365
       </button>
       
     </div>
