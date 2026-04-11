@@ -466,6 +466,16 @@ const handleDownload11 = () => {
     URL.revokeObjectURL(url);
   };
 
+  function handleDownload12() {
+  const link = document.createElement('a');
+  link.href =
+    'https://github.com/truongnx2601/windowchecker/releases/download/v1.0.0/WindowsLicenseChecker.exe';
+  link.download = 'WindowsLicenseCheker.exe';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 gap-4">
@@ -534,6 +544,12 @@ const handleDownload11 = () => {
         className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
       >
         Tải file Config ZaloPC
+      </button>
+      <button
+        onClick={handleDownload12}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+      >
+        Tải file Windows Lic check
       </button>
       
     </div>
