@@ -616,6 +616,13 @@ const handleDownload11 = () => {
       >
         Tải file lấy OEM key
       </button>
+      <a 
+        href="https://vacxinvietnam-my.sharepoint.com/:x:/g/personal/truongnx_vnvc_vn/IQAD4nWJNx4VRp2eX5FFVAemAfTwB3FSh_J_dSJoYMNLuMs?e=MrahRQ" 
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
+        Note OEM
+      </a>
     </div>
   );
 }
