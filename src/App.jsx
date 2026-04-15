@@ -496,6 +496,39 @@ const handleDownload11 = () => {
     document.body.removeChild(link);
   };
 
+  const handleDownload14 = () => {
+    const content = `@echo off
+                      title Get OEM Windows Key
+
+                      echo ================================
+                      echo   GET WINDOWS OEM KEY FROM BIOS
+                      echo ================================
+                      echo.
+
+                      for /f "tokens=2 delims==" %%i in ('wmic path softwarelicensingservice get OA3xOriginalProductKey /value ^| find "="') do set key=%%i
+
+                      if defined key (
+                          echo OEM Key cua ban la:
+                          echo.
+                          echo %key%
+                      ) else (
+                          echo Khong tim thay OEM key trong BIOS.
+                      )
+
+                      echo.
+                      pause`;
+
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "OEM-key.bat";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 gap-4">
@@ -577,7 +610,12 @@ const handleDownload11 = () => {
       >
         Tải file O365
       </button>
-      
+      <button
+        onClick={handleDownload14}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+      >
+        Tải file lấy OEM key
+      </button>
     </div>
   );
 }
