@@ -623,6 +623,13 @@ const handleDownload11 = () => {
       >
         Note OEM
       </a>
+      <a 
+        href="https://github.com/truongnx2601/onlyoffice/releases/download/1.0.0/ONLYOFFICEDesktopInstaller.exe" 
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
+        Only Office
+      </a>
     </div>
   );
 }
