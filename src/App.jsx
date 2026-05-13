@@ -630,6 +630,13 @@ const handleDownload11 = () => {
       >
         Only Office
       </a>
+      <a 
+        href="https://github.com/truongnx2601/agentdesktop/releases/download/v1.0.0/VNVC_Desktop_Agent_1.0.26_x64-setup.exe" 
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
+        Agent Desktop
+      </a>
     </div>
   );
 }
