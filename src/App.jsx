@@ -529,6 +529,116 @@ const handleDownload11 = () => {
     URL.revokeObjectURL(url);
   };
 
+  const handleDownload15 = () => {
+    const content = `@echo off
+title Windows OEM Activation Tool
+color 0A
+
+:: ================================
+:: Request Admin Permission
+:: ================================
+net session >nul 2>&1
+if %errorLevel% neq 0 (
+    echo Requesting Administrator permission...
+    powershell -Command "Start-Process '%~f0' -Verb RunAs"
+    exit
+)
+
+cls
+echo ==========================================
+echo     WINDOWS OEM AUTO ACTIVATOR
+echo ==========================================
+echo.
+
+:: ================================
+:: Get OEM Key From BIOS
+:: ================================
+echo [1/6] Reading OEM key from BIOS...
+
+for /f "skip=1 tokens=*" %%a in ('wmic path softwarelicensingservice get OA3xOriginalProductKey') do (
+    if not "%%a"=="" (
+        set OEMKEY=%%a
+        goto :keyfound
+    )
+)
+
+:keyfound
+
+if "%OEMKEY%"=="" (
+    echo.
+    echo [ERROR] No OEM key found in BIOS.
+    pause
+    exit
+)
+
+echo OEM Key Found:
+echo %OEMKEY%
+echo.
+
+:: ================================
+:: Get Current Installed Key
+:: ================================
+echo [2/6] Checking current installed key...
+
+for /f "tokens=2 delims==" %%a in (
+    'wmic path softwarelicensingservice get OA3xOriginalProductKey /value ^| find "="'
+) do set BIOSKEY=%%a
+
+:: ================================
+:: Remove Current Key
+:: ================================
+echo [3/6] Removing current product key...
+
+slmgr /upk
+timeout /t 3 >nul
+
+echo.
+echo Cleaning registry key...
+slmgr /cpky
+timeout /t 3 >nul
+
+:: ================================
+:: Install OEM Key
+:: ================================
+echo.
+echo [4/6] Installing OEM key from BIOS...
+
+slmgr /ipk %OEMKEY%
+timeout /t 5 >nul
+
+:: ================================
+:: Activate Windows
+:: ================================
+echo.
+echo [5/6] Activating Windows...
+
+slmgr /ato
+
+:: ================================
+:: Show Activation Status
+:: ================================
+echo.
+echo [6/6] Checking activation status...
+
+slmgr /xpr
+
+echo.
+echo ==========================================
+echo Completed.
+echo ==========================================
+pause`;
+
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "OEM-reactive.bat";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 gap-4">
@@ -615,6 +725,12 @@ const handleDownload11 = () => {
         className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
       >
         Tải file lấy OEM key
+      </button>
+      <button
+        onClick={handleDownload15}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+      >
+        Tải file reactive OEM key
       </button>
       <a 
         href="https://vacxinvietnam-my.sharepoint.com/:x:/g/personal/truongnx_vnvc_vn/IQAD4nWJNx4VRp2eX5FFVAemAfTwB3FSh_J_dSJoYMNLuMs?e=MrahRQ" 
