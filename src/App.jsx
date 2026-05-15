@@ -637,6 +637,20 @@ const handleDownload11 = () => {
       >
         Agent Desktop
       </a>
+      <a 
+        href="https://github.com/truongnx2601/tempbase/releases/download/V1.0.0/tempbase-2.zip" 
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
+        Tempbase
+      </a>
+      <a 
+        href="https://github.com/truongnx2601/mitapro/releases/download/V1.0.0/MitaProV2.zip" 
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
+        Mitapro V2
+      </a>
     </div>
   );
 }
