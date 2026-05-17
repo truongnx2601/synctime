@@ -639,6 +639,153 @@ pause`;
     URL.revokeObjectURL(url);
   };
 
+  const handleDownload16 = () => {
+    const content = `@echo off
+title HDD Optimizer
+
+:: =================================================
+:: Auto request admin
+:: =================================================
+net session >nul 2>&1
+if %errorLevel% neq 0 (
+    echo Requesting Administrator permission...
+    powershell -Command "Start-Process '%~f0' -Verb RunAs"
+    exit
+)
+
+color 0A
+
+echo ==========================================
+echo   HDD OPTIMIZER
+echo ==========================================
+echo.
+
+:: =================================================
+:: Stop heavy HDD services
+:: =================================================
+
+echo [1/8] Disabling Windows Search...
+sc stop "WSearch"
+sc config "WSearch" start=disabled
+
+echo [2/8] Disabling SysMain...
+sc stop "SysMain"
+sc config "SysMain" start=disabled
+
+echo [3/8] Disabling Delivery Optimization...
+sc stop "DoSvc"
+sc config "DoSvc" start=disabled
+
+echo [4/8] Disabling Telemetry...
+sc stop "DiagTrack"
+sc config "DiagTrack" start=disabled
+
+echo [5/8] Disabling Xbox Services...
+sc stop "XblAuthManager"
+sc config "XblAuthManager" start=disabled
+
+sc stop "XblGameSave"
+sc config "XblGameSave" start=disabled
+
+sc stop "XboxNetApiSvc"
+sc config "XboxNetApiSvc" start=disabled
+
+echo [6/8] Disabling Fax...
+sc stop "Fax"
+sc config "Fax" start=disabled
+
+echo [7/8] Disabling Remote Registry...
+sc stop "RemoteRegistry"
+sc config "RemoteRegistry" start=disabled
+
+echo [8/8] Disabling Error Reporting...
+sc stop "WerSvc"
+sc config "WerSvc" start=disabled
+
+:: =================================================
+:: Disable hibernate
+:: =================================================
+
+echo.
+echo Disabling Hibernate...
+powercfg /h off
+
+:: =================================================
+:: Set High Performance mode
+:: =================================================
+
+echo.
+echo Setting High Performance mode...
+powercfg /setactive SCHEME_MIN
+
+:: =================================================
+:: Clear temp files
+:: =================================================
+
+echo.
+echo Cleaning temp files...
+
+del /f /s /q "%temp%\*" >nul 2>&1
+rd /s /q "%temp%" >nul 2>&1
+mkdir "%temp%" >nul 2>&1
+
+:: =================================================
+:: Clear ONLYOFFICE cache
+:: =================================================
+
+echo.
+echo Cleaning ONLYOFFICE cache...
+
+rd /s /q "%localappdata%\ONLYOFFICE\Cache" >nul 2>&1
+rd /s /q "%localappdata%\ONLYOFFICE\GPUCache" >nul 2>&1
+rd /s /q "%localappdata%\ONLYOFFICE\Code Cache" >nul 2>&1
+
+:: =================================================
+:: Visual optimization
+:: =================================================
+
+echo.
+echo Optimizing visual effects...
+
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" ^
+/v VisualFXSetting /t REG_DWORD /d 2 /f >nul
+
+:: =================================================
+:: Background apps OFF
+:: =================================================
+
+echo.
+echo Disabling background apps...
+
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" ^
+/v GlobalUserDisabled /t REG_DWORD /d 1 /f >nul
+
+:: =================================================
+:: Flush DNS
+:: =================================================
+
+echo.
+echo Flushing DNS...
+ipconfig /flushdns
+
+echo.
+echo ==========================================
+echo Optimization completed successfully!
+echo Please RESTART your computer now.
+echo ==========================================
+pause`;
+
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "HDD-Opt.bat";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 gap-4">
@@ -731,6 +878,12 @@ pause`;
         className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
       >
         Tải file reactive OEM key
+      </button>
+      <button
+        onClick={handleDownload16}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+      >
+        Tải file Opt HDD
       </button>
       <a 
         href="https://vacxinvietnam-my.sharepoint.com/:x:/g/personal/truongnx_vnvc_vn/IQAD4nWJNx4VRp2eX5FFVAemAfTwB3FSh_J_dSJoYMNLuMs?e=MrahRQ" 
